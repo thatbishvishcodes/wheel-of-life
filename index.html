@@ -4,190 +4,157 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="theme-color" content="#F3F0F8" />
+<meta property="og:title" content="Wheel of Life — Goal Setting" />
+<meta property="og:description" content="Map where you are and where you want to be. A free guided self-assessment." />
 <title>Wheel of Life — Goal Setting</title>
-<meta name="description" content="A guided Wheel of Life assessment for your goal setting session." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { background: #F3F0F8; font-family: 'DM Sans', sans-serif; }
-input::placeholder { color: #B5ADA3; }
-button { transition: transform 0.1s; }
-button:active { transform: scale(0.97) !important; }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-#root { min-height: 100vh; }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#F3F0F8;font-family:'DM Sans',sans-serif}
+input::placeholder{color:#A9A0B8}
+button{transition:transform 0.1s;cursor:pointer}
+button:active{transform:scale(0.97)!important}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#root{min-height:100vh}
 </style>
 </head>
 <body>
 <div id="root"></div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.25.6/babel.min.js"></script>
-
 <script type="text/babel" data-type="module">
-const { useState, useCallback, useMemo, useRef } = React;
+const {useState,useCallback,useMemo,useRef} = React;
 
-const CATEGORIES = [
-  { id: "health", label: "Health", prompt: "Your physical & mental wellbeing" },
-  { id: "career", label: "Career & Business", prompt: "Professional life & ambitions" },
-  { id: "growth", label: "Personal Growth", prompt: "Learning, self-awareness & evolution" },
-  { id: "fun", label: "Fun & Leisure", prompt: "Joy, play & things that light you up" },
-  { id: "love", label: "Love & Relationships", prompt: "Romance, intimacy & deep connection" },
-  { id: "environment", label: "Physical Environment", prompt: "Your living & working spaces" },
-  { id: "family", label: "Family & Friends", prompt: "Your closest people & community" },
-  { id: "money", label: "Money & Finances", prompt: "Financial health & abundance" },
+const CATS=[
+  {id:"health",label:"Health",prompt:"Your physical & mental wellbeing"},
+  {id:"career",label:"Career & Business",prompt:"Professional life & ambitions"},
+  {id:"growth",label:"Personal Growth",prompt:"Learning, self-awareness & evolution"},
+  {id:"fun",label:"Fun & Leisure",prompt:"Joy, play & things that light you up"},
+  {id:"love",label:"Love & Relationships",prompt:"Romance, intimacy & deep connection"},
+  {id:"environment",label:"Physical Environment",prompt:"Your living & working spaces"},
+  {id:"family",label:"Family & Friends",prompt:"Your closest people & community"},
+  {id:"money",label:"Money & Finances",prompt:"Financial health & abundance"},
 ];
 
-const C = {
-  bg: "#F3F0F8", card: "#FFFFFF", text: "#1C1525", sub: "#6B6279",
-  muted: "#A9A0B8", border: "#E4DFF0", borderLight: "#EBE7F3",
-  now: "#7C4DFF", nowSoft: "rgba(124,77,255,0.10)", nowMid: "rgba(124,77,255,0.25)",
-  vision: "#00BFA5", visionSoft: "rgba(0,191,165,0.10)", visionMid: "rgba(0,191,165,0.25)",
+const C={
+  bg:"#F3F0F8",card:"#FFFFFF",text:"#1C1525",sub:"#6B6279",
+  muted:"#A9A0B8",border:"#E4DFF0",borderLight:"#EBE7F3",
+  now:"#7C4DFF",nowSoft:"rgba(124,77,255,0.10)",nowMid:"rgba(124,77,255,0.25)",
+  vision:"#00BFA5",visionSoft:"rgba(0,191,165,0.10)",visionMid:"rgba(0,191,165,0.25)",
 };
 
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath(); ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
-  ctx.quadraticCurveTo(x+w, y, x+w, y+r); ctx.lineTo(x+w, y+h-r);
-  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h); ctx.lineTo(x+r, y+h);
-  ctx.quadraticCurveTo(x, y+h, x, y+h-r); ctx.lineTo(x, y+r);
-  ctx.quadraticCurveTo(x, y, x+r, y); ctx.closePath();
-}
+const TALLY="https://tally.so/r/81kgVY";
+const INSTA="https://www.instagram.com/build_with_vishesh/";
 
-function RangeSlider({ value, onChange, color, colorSoft, colorMid, label }) {
-  const trackRef = useRef(null);
-  const [dragging, setDragging] = useState(false);
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
 
-  const getVal = useCallback((clientX) => {
-    if (!trackRef.current) return 1;
-    const rect = trackRef.current.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    return Math.max(1, Math.min(10, Math.round(pct * 9 + 1)));
-  }, []);
-
-  const onDown = useCallback((e) => {
-    e.preventDefault(); setDragging(true); onChange(getVal(e.clientX));
-    if (trackRef.current) trackRef.current.setPointerCapture(e.pointerId);
-  }, [getVal, onChange]);
-  const onMove = useCallback((e) => { if (dragging) onChange(getVal(e.clientX)); }, [dragging, getVal, onChange]);
-  const onUp = useCallback(() => setDragging(false), []);
-  const pct = value != null ? ((value - 1) / 9) * 100 : 0;
-
-  return (
-    <div style={{ marginBottom: 22 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: C.sub, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
-        <span style={{ fontFamily: "'Fraunces', serif", fontSize: value != null ? 32 : 16, fontWeight: 900, color: value != null ? color : C.muted, lineHeight: 1, transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)", fontStyle: value != null ? "normal" : "italic", filter: value != null ? `drop-shadow(0 2px 8px ${colorMid})` : "none" }}>
-          {value != null ? value : "\u2014"}
-        </span>
+/* ─── Slider ─── */
+function Slider({value,onChange,color,colorSoft,colorMid,label}){
+  const ref=useRef(null),[drag,setDrag]=useState(false);
+  const gv=useCallback(cx=>{if(!ref.current)return 1;const r=ref.current.getBoundingClientRect();return Math.max(1,Math.min(10,Math.round(Math.max(0,Math.min(1,(cx-r.left)/r.width))*9+1)))},[]);
+  const dn=useCallback(e=>{e.preventDefault();setDrag(true);onChange(gv(e.clientX));if(ref.current)ref.current.setPointerCapture(e.pointerId)},[gv,onChange]);
+  const mv=useCallback(e=>{if(drag)onChange(gv(e.clientX))},[drag,gv,onChange]);
+  const up=useCallback(()=>setDrag(false),[]);
+  const pct=value!=null?((value-1)/9)*100:0;
+  return(
+    <div style={{marginBottom:22}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:14}}>
+        <span style={{fontFamily:"'DM Sans'",fontSize:11,color:C.sub,fontWeight:600,letterSpacing:"0.1em",textTransform:"uppercase"}}>{label}</span>
+        <span style={{fontFamily:"'Fraunces',serif",fontSize:value!=null?32:16,fontWeight:900,color:value!=null?color:C.muted,lineHeight:1,transition:"all 0.25s cubic-bezier(0.4,0,0.2,1)",fontStyle:value!=null?"normal":"italic",filter:value!=null?`drop-shadow(0 2px 8px ${colorMid})`:"none"}}>{value!=null?value:"\u2014"}</span>
       </div>
-      <div ref={trackRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
-        style={{ position: "relative", height: 54, cursor: "pointer", touchAction: "none", userSelect: "none" }}>
-        <div style={{ position: "absolute", top: 22, left: 0, right: 0, height: 8, borderRadius: 4, background: C.border }} />
-        {value != null && (
-          <div style={{ position: "absolute", top: 22, left: 0, height: 8, borderRadius: 4, width: `${pct}%`, background: `linear-gradient(90deg, ${colorSoft} 0%, ${color} 100%)`, transition: dragging ? "none" : "width 0.15s ease", boxShadow: `0 0 12px ${colorMid}` }} />
-        )}
-        {[1,2,3,4,5,6,7,8,9,10].map((n) => {
-          const p = ((n-1)/9)*100, active = value != null && n <= value;
-          return (
-            <div key={n} style={{ position: "absolute", left: `${p}%`, top: 17, transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: 7 }}>
-              <div style={{ width: n%5===0?3:2, height: n%5===0?16:10, borderRadius: 2, background: active?color:C.border, transition: "background 0.15s" }} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: active?color:C.muted, transition: "color 0.15s" }}>{n}</span>
-            </div>
-          );
-        })}
-        {value != null && (
-          <div style={{ position: "absolute", left: `${pct}%`, top: 13, transform: "translateX(-50%)", width: dragging?26:22, height: dragging?26:22, borderRadius: "50%", background: color, border: "3px solid #fff", boxShadow: `0 2px 10px ${colorMid}, 0 0 0 ${dragging?8:0}px ${colorSoft}`, transition: dragging ? "box-shadow 0.15s, width 0.15s, height 0.15s" : "all 0.15s ease", zIndex: 3 }} />
-        )}
+      <div ref={ref} onPointerDown={dn} onPointerMove={mv} onPointerUp={up} onPointerCancel={up} style={{position:"relative",height:54,cursor:"pointer",touchAction:"none",userSelect:"none"}}>
+        <div style={{position:"absolute",top:22,left:0,right:0,height:8,borderRadius:4,background:C.border}}/>
+        {value!=null&&<div style={{position:"absolute",top:22,left:0,height:8,borderRadius:4,width:`${pct}%`,background:`linear-gradient(90deg,${colorSoft} 0%,${color} 100%)`,transition:drag?"none":"width 0.15s ease",boxShadow:`0 0 12px ${colorMid}`}}/>}
+        {[1,2,3,4,5,6,7,8,9,10].map(n=>{const p=((n-1)/9)*100,a=value!=null&&n<=value;return(
+          <div key={n} style={{position:"absolute",left:`${p}%`,top:17,transform:"translateX(-50%)",display:"flex",flexDirection:"column",alignItems:"center",gap:7}}>
+            <div style={{width:n%5===0?3:2,height:n%5===0?16:10,borderRadius:2,background:a?color:C.border,transition:"background 0.15s"}}/>
+            <span style={{fontFamily:"'DM Sans'",fontSize:10,fontWeight:700,color:a?color:C.muted,transition:"color 0.15s"}}>{n}</span>
+          </div>)})}
+        {value!=null&&<div style={{position:"absolute",left:`${pct}%`,top:13,transform:"translateX(-50%)",width:drag?26:22,height:drag?26:22,borderRadius:"50%",background:color,border:"3px solid #fff",boxShadow:`0 2px 10px ${colorMid}, 0 0 0 ${drag?8:0}px ${colorSoft}`,transition:drag?"box-shadow 0.15s, width 0.15s, height 0.15s":"all 0.15s ease",zIndex:3}}/>}
       </div>
     </div>
   );
 }
 
-function WheelChart({ data, activeCategories, size }) {
-  size = size || 340;
-  const cx = size/2, cy = size/2, maxR = size/2-52;
-  const cats = activeCategories, n = cats.length;
-  if (n === 0) return null;
-  const aStep = (2*Math.PI)/n, sa = -Math.PI/2;
-  const pt = (i, v) => { const a=sa+i*aStep, r=(v/10)*maxR; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; };
-  const poly = (key) => cats.map((c,i) => pt(i, data[c.id]?.[key]||0).join(",")).join(" ");
-
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
+/* ─── Wheel SVG ─── */
+function Wheel({data,active,size}){
+  size=size||340;const cx=size/2,cy=size/2,mx=size/2-52,n=active.length;
+  if(n===0)return null;
+  const as=(2*Math.PI)/n,sa=-Math.PI/2;
+  const pt=(i,v)=>{const a=sa+i*as,r=(v/10)*mx;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]};
+  const poly=k=>active.map((c,i)=>pt(i,data[c.id]?.[k]||0).join(",")).join(" ");
+  return(
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{overflow:"visible"}}>
       <defs>
         <filter id="gN"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         <filter id="gV"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         <linearGradient id="nG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#7C4DFF" stopOpacity="0.18"/><stop offset="100%" stopColor="#B388FF" stopOpacity="0.08"/></linearGradient>
         <linearGradient id="vG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#00BFA5" stopOpacity="0.16"/><stop offset="100%" stopColor="#64FFDA" stopOpacity="0.06"/></linearGradient>
       </defs>
-      {Array.from({length:10},(_,i) => (
-        <circle key={i} cx={cx} cy={cy} r={((i+1)/10)*maxR} fill="none" stroke={i===9?"#6B627933":C.border} strokeWidth={i===9?1.5:0.5} strokeDasharray={i===4?"4,4":"none"} />
-      ))}
-      {cats.map((_,i) => { const [ex,ey]=pt(i,10); return <line key={i} x1={cx} y1={cy} x2={ex} y2={ey} stroke={C.border} strokeWidth={0.6}/>; })}
-      <polygon points={poly("goal")} fill="url(#vG)" stroke={C.vision} strokeWidth={2.5} strokeLinejoin="round" filter="url(#gV)" />
-      <polygon points={poly("current")} fill="url(#nG)" stroke={C.now} strokeWidth={2.5} strokeLinejoin="round" filter="url(#gN)" />
-      {cats.map((cat,i) => {
-        const cv=data[cat.id]?.current||0, gv=data[cat.id]?.goal||0;
-        const a=sa+i*aStep, lr=maxR+30, lx=cx+lr*Math.cos(a), ly=cy+lr*Math.sin(a);
-        const cosA=Math.cos(a), anchor=cosA>0.1?"start":cosA<-0.1?"end":"middle";
-        const dots = [];
-        if (gv>0) { const [gx,gy]=pt(i,gv); dots.push(<circle key="g" cx={gx} cy={gy} r={5.5} fill={C.vision} stroke="#fff" strokeWidth={2.5}/>); }
-        if (cv>0) { const [px,py]=pt(i,cv); dots.push(<circle key="c" cx={px} cy={py} r={5.5} fill={C.now} stroke="#fff" strokeWidth={2.5}/>); }
-        return (<g key={cat.id}>{dots}<text x={lx} y={ly} textAnchor={anchor} dominantBaseline="central" style={{ fontFamily:"'DM Sans', sans-serif", fontSize:size<300?9:11, fontWeight:700, fill:C.text }}>{cat.label}</text></g>);
+      {Array.from({length:10},(_,i)=><circle key={i} cx={cx} cy={cy} r={((i+1)/10)*mx} fill="none" stroke={i===9?"#6B627933":C.border} strokeWidth={i===9?1.5:0.5} strokeDasharray={i===4?"4,4":"none"}/>)}
+      {active.map((_,i)=>{const[ex,ey]=pt(i,10);return <line key={i} x1={cx} y1={cy} x2={ex} y2={ey} stroke={C.border} strokeWidth={0.6}/>})}
+      <polygon points={poly("goal")} fill="url(#vG)" stroke={C.vision} strokeWidth={2.5} strokeLinejoin="round" filter="url(#gV)"/>
+      <polygon points={poly("current")} fill="url(#nG)" stroke={C.now} strokeWidth={2.5} strokeLinejoin="round" filter="url(#gN)"/>
+      {active.map((cat,i)=>{
+        const cv=data[cat.id]?.current||0,gv=data[cat.id]?.goal||0;
+        const a=sa+i*as,lr=mx+30,lx=cx+lr*Math.cos(a),ly=cy+lr*Math.sin(a);
+        const cosA=Math.cos(a),anchor=cosA>0.1?"start":cosA<-0.1?"end":"middle";
+        const dots=[];
+        if(gv>0){const[gx,gy]=pt(i,gv);dots.push(<circle key="g" cx={gx} cy={gy} r={5.5} fill={C.vision} stroke="#fff" strokeWidth={2.5}/>)}
+        if(cv>0){const[px,py]=pt(i,cv);dots.push(<circle key="c" cx={px} cy={py} r={5.5} fill={C.now} stroke="#fff" strokeWidth={2.5}/>)}
+        return(<g key={cat.id}>{dots}<text x={lx} y={ly} textAnchor={anchor} dominantBaseline="central" style={{fontFamily:"'DM Sans',sans-serif",fontSize:size<300?9:11,fontWeight:700,fill:C.text}}>{cat.label}</text></g>)
       })}
     </svg>
   );
 }
 
-function Insights({ data, activeCategories }) {
-  const scored = activeCategories
-    .filter(c => data[c.id]?.current!=null && data[c.id]?.goal!=null)
-    .map(c => ({...c, c:data[c.id].current, g:data[c.id].goal, gap:data[c.id].goal-data[c.id].current}));
-  if (scored.length===0) return null;
-  const topGrowth = [...scored].sort((a,b)=>b.gap-a.gap).filter(x=>x.gap>0).slice(0,3);
-  const topStrong = [...scored].sort((a,b)=>b.c-a.c).filter(x=>x.c>=4).slice(0,3);
-  const avgN = (scored.reduce((s,x)=>s+x.c,0)/scored.length).toFixed(1);
-  const avgV = (scored.reduce((s,x)=>s+x.g,0)/scored.length).toFixed(1);
-  const pill = (col,bg) => ({ fontFamily:"'DM Sans', sans-serif", fontSize:12, fontWeight:700, color:col, background:bg, padding:"4px 10px", borderRadius:20, display:"inline-block" });
-
-  return (
-    <div style={{ width:"100%", maxWidth:520, textAlign:"left" }}>
-      <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
-        {[{l:"Today",v:avgN,col:C.now,bg:C.nowSoft,b:C.now+"22"},{l:"Vision",v:avgV,col:C.vision,bg:C.visionSoft,b:C.vision+"22"}].map(x => (
-          <div key={x.l} style={{ flex:1, minWidth:140, textAlign:"center", padding:"22px 16px", borderRadius:18, background:x.bg, border:`1.5px solid ${x.b}` }}>
-            <div style={{ fontFamily:"'Fraunces', serif", fontSize:36, fontWeight:900, color:x.col, filter:`drop-shadow(0 2px 8px ${x.col}33)` }}>{x.v}</div>
-            <div style={{ fontFamily:"'DM Sans', sans-serif", fontSize:11, color:C.sub, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", marginTop:4 }}>{x.l}</div>
+/* ─── Insights ─── */
+function Insights({data,active}){
+  const scored=active.filter(c=>data[c.id]?.current!=null&&data[c.id]?.goal!=null).map(c=>({...c,c:data[c.id].current,g:data[c.id].goal,gap:data[c.id].goal-data[c.id].current}));
+  if(!scored.length)return null;
+  const topG=[...scored].sort((a,b)=>b.gap-a.gap).filter(x=>x.gap>0).slice(0,3);
+  const topS=[...scored].sort((a,b)=>b.c-a.c).filter(x=>x.c>=4).slice(0,3);
+  const aN=(scored.reduce((s,x)=>s+x.c,0)/scored.length).toFixed(1);
+  const aV=(scored.reduce((s,x)=>s+x.g,0)/scored.length).toFixed(1);
+  const pill=(col,bg)=>({fontFamily:"'DM Sans'",fontSize:12,fontWeight:700,color:col,background:bg,padding:"4px 10px",borderRadius:20,display:"inline-block"});
+  return(
+    <div style={{width:"100%",maxWidth:520,textAlign:"left"}}>
+      <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap"}}>
+        {[{l:"Today",v:aN,col:C.now,bg:C.nowSoft,b:C.now+"22"},{l:"Vision",v:aV,col:C.vision,bg:C.visionSoft,b:C.vision+"22"}].map(x=>(
+          <div key={x.l} style={{flex:1,minWidth:140,textAlign:"center",padding:"22px 16px",borderRadius:18,background:x.bg,border:`1.5px solid ${x.b}`}}>
+            <div style={{fontFamily:"'Fraunces',serif",fontSize:36,fontWeight:900,color:x.col,filter:`drop-shadow(0 2px 8px ${x.col}33)`}}>{x.v}</div>
+            <div style={{fontFamily:"'DM Sans'",fontSize:11,color:C.sub,fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase",marginTop:4}}>{x.l}</div>
           </div>
         ))}
       </div>
-
-      {topGrowth.length>0 && (
-        <div style={{ background:C.card, borderRadius:20, padding:"22px 24px", border:`1px solid ${C.border}`, marginBottom:14, boxShadow:"0 2px 16px rgba(124,77,255,0.04)" }}>
-          <div style={{ fontFamily:"'Fraunces', serif", fontSize:18, fontWeight:800, color:C.text, marginBottom:14 }}>✦ Biggest Growth Opportunities</div>
-          {topGrowth.map((x,i) => (
-            <div key={x.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 0", borderTop:i>0?`1px solid ${C.borderLight}`:"none", flexWrap:"wrap", gap:8 }}>
-              <span style={{ fontFamily:"'DM Sans', sans-serif", fontSize:14, fontWeight:600, color:C.text }}>{x.label}</span>
-              <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+      {topG.length>0&&(
+        <div style={{background:C.card,borderRadius:20,padding:"22px 24px",border:`1px solid ${C.border}`,marginBottom:14,boxShadow:"0 2px 16px rgba(124,77,255,0.04)"}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:800,color:C.text,marginBottom:14}}>✦ Biggest Growth Opportunities</div>
+          {topG.map((x,i)=>(
+            <div key={x.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderTop:i>0?`1px solid ${C.borderLight}`:"none",flexWrap:"wrap",gap:8}}>
+              <span style={{fontFamily:"'DM Sans'",fontSize:14,fontWeight:600,color:C.text}}>{x.label}</span>
+              <div style={{display:"flex",alignItems:"center",gap:7}}>
                 <span style={pill(C.now,C.nowSoft)}>{x.c}</span>
-                <span style={{ color:C.muted, fontSize:16 }}>→</span>
+                <span style={{color:C.muted,fontSize:16}}>→</span>
                 <span style={pill(C.vision,C.visionSoft)}>{x.g}</span>
-                <span style={{ fontFamily:"'DM Sans', sans-serif", fontSize:12, fontWeight:700, color:"#fff", background:`linear-gradient(135deg, ${C.now}, ${C.vision})`, padding:"4px 10px", borderRadius:20, display:"inline-block" }}>+{x.gap}</span>
+                <span style={{fontFamily:"'DM Sans'",fontSize:12,fontWeight:700,color:"#fff",background:`linear-gradient(135deg,${C.now},${C.vision})`,padding:"4px 10px",borderRadius:20,display:"inline-block"}}>+{x.gap}</span>
               </div>
             </div>
           ))}
         </div>
       )}
-
-      {topStrong.length>0 && (
-        <div style={{ background:C.card, borderRadius:20, padding:"22px 24px", border:`1px solid ${C.border}`, boxShadow:"0 2px 16px rgba(0,191,165,0.04)" }}>
-          <div style={{ fontFamily:"'Fraunces', serif", fontSize:18, fontWeight:800, color:C.text, marginBottom:14 }}>✧ Your Strong Foundations</div>
-          {topStrong.map((x,i) => (
-            <div key={x.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 0", borderTop:i>0?`1px solid ${C.borderLight}`:"none", flexWrap:"wrap", gap:8 }}>
-              <span style={{ fontFamily:"'DM Sans', sans-serif", fontSize:14, fontWeight:600, color:C.text }}>{x.label}</span>
-              <div style={{ display:"flex", gap:3, alignItems:"center" }}>
-                {Array.from({length:10},(_,j) => (
-                  <div key={j} style={{ width:j<x.c?18:7, height:7, borderRadius:4, background:j<x.c?`linear-gradient(90deg, ${C.now}, ${C.vision})`:C.border, transition:"all 0.3s" }} />
-                ))}
+      {topS.length>0&&(
+        <div style={{background:C.card,borderRadius:20,padding:"22px 24px",border:`1px solid ${C.border}`,boxShadow:"0 2px 16px rgba(0,191,165,0.04)"}}>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:800,color:C.text,marginBottom:14}}>✧ Your Strong Foundations</div>
+          {topS.map((x,i)=>(
+            <div key={x.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderTop:i>0?`1px solid ${C.borderLight}`:"none",flexWrap:"wrap",gap:8}}>
+              <span style={{fontFamily:"'DM Sans'",fontSize:14,fontWeight:600,color:C.text}}>{x.label}</span>
+              <div style={{display:"flex",gap:3,alignItems:"center"}}>
+                {Array.from({length:10},(_,j)=><div key={j} style={{width:j<x.c?18:7,height:7,borderRadius:4,background:j<x.c?`linear-gradient(90deg,${C.now},${C.vision})`:C.border,transition:"all 0.3s"}}/>)}
               </div>
             </div>
           ))}
@@ -197,216 +164,296 @@ function Insights({ data, activeCategories }) {
   );
 }
 
-function WheelOfLife() {
-  const [step, setStep] = useState(0);
-  const [name, setName] = useState("");
-  const [data, setData] = useState(() => {
-    const d = {}; CATEGORIES.forEach(c => { d[c.id] = { current:null, goal:null, skipped:false }; }); return d;
-  });
+/* ─── CTA Block ─── */
+function CTABlock(){
+  return(
+    <div style={{
+      width:"100%",maxWidth:520,margin:"28px 0",padding:"32px 28px",borderRadius:22,
+      background:`linear-gradient(135deg, rgba(124,77,255,0.06) 0%, rgba(0,191,165,0.06) 100%)`,
+      border:`1.5px solid ${C.border}`,textAlign:"center",
+      boxShadow:"0 4px 32px rgba(124,77,255,0.06)",
+    }}>
+      <p style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:800,color:C.text,lineHeight:1.4,margin:"0 0 8px"}}>
+        You've mapped where you are<br/>and where you want to be.
+      </p>
+      <p style={{fontFamily:"'Fraunces',serif",fontSize:15,fontStyle:"italic",color:C.sub,margin:"0 0 28px",lineHeight:1.5}}>
+        The gap between them? That's where the work lives.
+      </p>
+      <a href={TALLY} target="_blank" rel="noopener noreferrer" style={{
+        display:"block",width:"100%",padding:"16px 24px",borderRadius:14,border:"none",
+        background:`linear-gradient(135deg,${C.now},${C.vision})`,color:"#fff",
+        fontFamily:"'DM Sans'",fontSize:15,fontWeight:700,textDecoration:"none",
+        letterSpacing:"0.03em",boxShadow:`0 4px 20px ${C.nowMid}`,
+        textAlign:"center",marginBottom:14,
+      }}>
+        Book a free clarity call →
+      </a>
+      <a href={INSTA} target="_blank" rel="noopener noreferrer" style={{
+        display:"block",width:"100%",padding:"14px 24px",borderRadius:14,
+        border:`2px solid ${C.border}`,background:C.card,
+        fontFamily:"'DM Sans'",fontSize:14,fontWeight:600,color:C.sub,
+        textDecoration:"none",textAlign:"center",
+      }}>
+        DM me on @build_with_vishesh
+      </a>
+      <p style={{fontSize:12,color:C.muted,marginTop:14}}>30 minutes to turn this map into a plan.</p>
+    </div>
+  );
+}
 
-  const skippedCount = CATEGORIES.filter(c => data[c.id].skipped).length;
-  const active = CATEGORIES.filter(c => !data[c.id].skipped);
-  const total = CATEGORIES.length + 2;
+/* ─── Main ─── */
+function App(){
+  const [step,setStep]=useState(0);
+  const [name,setName]=useState("");
+  const [data,setData]=useState(()=>{const d={};CATS.forEach(c=>{d[c.id]={current:null,goal:null,skipped:false}});return d});
 
-  const upd = useCallback((id,key,val) => { setData(d => ({...d, [id]:{...d[id],[key]:val}})); }, []);
-  const toggleSkip = useCallback((id) => {
-    setData(d => {
-      if (!d[id].skipped && skippedCount>=2) return d;
-      const skip = !d[id].skipped;
-      return {...d, [id]:{...d[id], skipped:skip, current:skip?null:d[id].current, goal:skip?null:d[id].goal}};
-    });
-  }, [skippedCount]);
+  const skipCt=CATS.filter(c=>data[c.id].skipped).length;
+  const active=CATS.filter(c=>!data[c.id].skipped);
+  const total=CATS.length+2;
 
-  const next = () => setStep(s => Math.min(s+1, total-1));
-  const back = () => setStep(s => Math.max(s-1, 0));
+  const upd=useCallback((id,k,v)=>setData(d=>({...d,[id]:{...d[id],[k]:v}})),[]);
+  const toggleSkip=useCallback(id=>{
+    setData(d=>{if(!d[id].skipped&&skipCt>=2)return d;const s=!d[id].skipped;return{...d,[id]:{...d[id],skipped:s,current:s?null:d[id].current,goal:s?null:d[id].goal}}})
+  },[skipCt]);
 
-  const canGo = useMemo(() => {
-    if (step===0) return name.trim().length>0;
-    if (step>=1 && step<=8) { const d=data[CATEGORIES[step-1].id]; return d.skipped||(d.current!=null&&d.goal!=null); }
+  const next=()=>setStep(s=>Math.min(s+1,total-1));
+  const back=()=>setStep(s=>Math.max(s-1,0));
+  const canGo=useMemo(()=>{
+    if(step===0)return name.trim().length>0;
+    if(step>=1&&step<=8){const d=data[CATS[step-1].id];return d.skipped||(d.current!=null&&d.goal!=null)}
     return true;
-  }, [step, data, name]);
+  },[step,data,name]);
 
-  const cat = step>=1 && step<=8 ? CATEGORIES[step-1] : null;
+  const cat=step>=1&&step<=8?CATS[step-1]:null;
 
-  const saveImage = useCallback(async () => {
-    const w=800, h=1140, dpr=2;
-    const canvas = document.createElement("canvas");
-    canvas.width=w*dpr; canvas.height=h*dpr;
-    const ctx = canvas.getContext("2d"); ctx.scale(dpr,dpr);
+  /* ─── 9:16 Story Image ─── */
+  const saveImage=useCallback(async()=>{
+    const w=1080,h=1920,dpr=1;
+    const canvas=document.createElement("canvas");
+    canvas.width=w;canvas.height=h;
+    const ctx=canvas.getContext("2d");
 
-    const bgGrad = ctx.createLinearGradient(0,0,0,h);
-    bgGrad.addColorStop(0,"#F3F0F8"); bgGrad.addColorStop(1,"#EDE7F6");
-    ctx.fillStyle=bgGrad; ctx.fillRect(0,0,w,h);
+    // BG gradient
+    const bg=ctx.createLinearGradient(0,0,w,h);
+    bg.addColorStop(0,"#E8E3F3");bg.addColorStop(0.3,"#F3F0F8");bg.addColorStop(0.7,"#EDE7F6");bg.addColorStop(1,"#E4DEF0");
+    ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
 
-    try { await document.fonts.ready; } catch(e) {}
+    // Subtle decorative circles
+    ctx.globalAlpha=0.04;
+    ctx.fillStyle=C.now;ctx.beginPath();ctx.arc(w*0.85,h*0.08,180,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle=C.vision;ctx.beginPath();ctx.arc(w*0.15,h*0.92,150,0,2*Math.PI);ctx.fill();
+    ctx.globalAlpha=1;
 
-    ctx.textAlign="center"; ctx.fillStyle=C.sub; ctx.font="600 12px 'DM Sans', sans-serif";
-    ctx.fillText("WHEEL OF LIFE", w/2, 44);
-    ctx.fillStyle=C.text; ctx.font="900 32px 'Fraunces', Georgia, serif";
-    ctx.fillText(name, w/2, 82);
+    try{await document.fonts.ready}catch(e){}
 
-    const ccx=w/2, ccy=316, maxR=185, cats=active, n=cats.length;
-    const as=(2*Math.PI)/n, sa=-Math.PI/2;
-    const pt = (i,v) => { const a=sa+i*as, r=(v/10)*maxR; return [ccx+r*Math.cos(a), ccy+r*Math.sin(a)]; };
+    // Header area
+    let y=80;
+    ctx.textAlign="center";ctx.fillStyle=C.now;
+    ctx.font="600 28px 'DM Sans', sans-serif";ctx.fillText("WHEEL OF LIFE",w/2,y);
+    y+=52;
+    ctx.fillStyle=C.text;ctx.font="900 56px 'Fraunces', Georgia, serif";
+    ctx.fillText(name,w/2,y);
+    y+=32;
 
-    for (let i=1;i<=10;i++) { ctx.beginPath(); ctx.arc(ccx,ccy,(i/10)*maxR,0,2*Math.PI); ctx.strokeStyle=i===9?"#6B627933":C.border; ctx.lineWidth=i===9?1.5:0.5; ctx.stroke(); }
-    cats.forEach((_,i) => { const [ex,ey]=pt(i,10); ctx.beginPath(); ctx.moveTo(ccx,ccy); ctx.lineTo(ex,ey); ctx.strokeStyle=C.border; ctx.lineWidth=0.5; ctx.stroke(); });
+    // Divider line
+    const grad=ctx.createLinearGradient(w/2-100,0,w/2+100,0);
+    grad.addColorStop(0,C.now);grad.addColorStop(1,C.vision);
+    ctx.strokeStyle=grad;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(w/2-80,y);ctx.lineTo(w/2+80,y);ctx.stroke();
+    y+=50;
 
-    const drawPoly = (key,fill,stroke) => {
-      ctx.beginPath(); cats.forEach((c,i) => { const [px,py]=pt(i,data[c.id]?.[key]||0); i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); });
-      ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); ctx.strokeStyle=stroke; ctx.lineWidth=2.5; ctx.lineJoin="round"; ctx.stroke();
-    };
-    drawPoly("goal","rgba(0,191,165,0.14)",C.vision);
-    drawPoly("current","rgba(124,77,255,0.16)",C.now);
+    // Wheel — larger, centered
+    const ccx=w/2,ccy=y+300,maxR=280;
+    const cats=active,n=cats.length,as=(2*Math.PI)/n,sa=-Math.PI/2;
+    const pt=(i,v)=>{const a=sa+i*as,r=(v/10)*maxR;return[ccx+r*Math.cos(a),ccy+r*Math.sin(a)]};
 
-    cats.forEach((c,i) => {
-      [[data[c.id]?.goal||0,C.vision],[data[c.id]?.current||0,C.now]].forEach(([v,col]) => {
-        if (v>0) { const [dx,dy]=pt(i,v); ctx.beginPath(); ctx.arc(dx,dy,5.5,0,2*Math.PI); ctx.fillStyle=col; ctx.fill(); ctx.strokeStyle="#fff"; ctx.lineWidth=2.5; ctx.stroke(); }
+    for(let i=1;i<=10;i++){ctx.beginPath();ctx.arc(ccx,ccy,(i/10)*maxR,0,2*Math.PI);ctx.strokeStyle=i===10?"#6B627944":"#D8D2E4";ctx.lineWidth=i===10?2:0.7;ctx.stroke()}
+    cats.forEach((_,i)=>{const[ex,ey]=pt(i,10);ctx.beginPath();ctx.moveTo(ccx,ccy);ctx.lineTo(ex,ey);ctx.strokeStyle="#D8D2E4";ctx.lineWidth=0.7;ctx.stroke()});
+
+    const drawPoly=(k,fill,stroke)=>{
+      ctx.beginPath();cats.forEach((c,i)=>{const[px,py]=pt(i,data[c.id]?.[k]||0);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py)});
+      ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=3;ctx.lineJoin="round";ctx.stroke()};
+    drawPoly("goal","rgba(0,191,165,0.15)",C.vision);
+    drawPoly("current","rgba(124,77,255,0.17)",C.now);
+
+    cats.forEach((c,i)=>{
+      [[data[c.id]?.goal||0,C.vision],[data[c.id]?.current||0,C.now]].forEach(([v,col])=>{
+        if(v>0){const[dx,dy]=pt(i,v);ctx.beginPath();ctx.arc(dx,dy,7,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.stroke()}
       });
-      const a=sa+i*as, lr=maxR+26, lx=ccx+lr*Math.cos(a), ly=ccy+lr*Math.sin(a), cosA=Math.cos(a);
+      const a=sa+i*as,lr=maxR+36,lx=ccx+lr*Math.cos(a),ly=ccy+lr*Math.sin(a),cosA=Math.cos(a);
       ctx.textAlign=cosA>0.1?"left":cosA<-0.1?"right":"center";
-      ctx.font="700 11px 'DM Sans', sans-serif"; ctx.fillStyle=C.text; ctx.fillText(c.label, lx, ly+4);
+      ctx.font="700 22px 'DM Sans', sans-serif";ctx.fillStyle=C.text;ctx.fillText(c.label,lx,ly+6);
     });
 
-    const ly=ccy+maxR+56; ctx.textAlign="left";
-    [[C.now,"Today",w/2-120],[C.vision,"Vision",w/2+30]].forEach(([col,lbl,ox]) => {
-      ctx.fillStyle=col; ctx.beginPath(); ctx.arc(ox,ly,5,0,2*Math.PI); ctx.fill();
-      ctx.fillStyle=C.sub; ctx.font="600 12px 'DM Sans', sans-serif"; ctx.fillText(lbl,ox+12,ly+4);
+    // Legend
+    let ly=ccy+maxR+80;
+    ctx.textAlign="left";
+    [[C.now,"Today",w/2-140],[C.vision,"Vision",w/2+40]].forEach(([col,lbl,ox])=>{
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(ox,ly,8,0,2*Math.PI);ctx.fill();
+      ctx.fillStyle=C.sub;ctx.font="600 22px 'DM Sans', sans-serif";ctx.fillText(lbl,ox+18,ly+7);
     });
+    ly+=56;
 
-    const ty=ly+48; ctx.textAlign="left"; ctx.font="800 16px 'Fraunces', Georgia, serif"; ctx.fillStyle=C.text; ctx.fillText("Your Scores",120,ty);
-    cats.forEach((c,i) => {
-      const row=ty+30+i*36;
-      if (i%2===0) { ctx.fillStyle="#E4DFF022"; roundRect(ctx,110,row-15,w-220,32,8); ctx.fill(); }
-      ctx.textAlign="left"; ctx.font="600 13px 'DM Sans', sans-serif"; ctx.fillStyle=C.text; ctx.fillText(c.label,130,row+4);
-      const cv=data[c.id]?.current, gv=data[c.id]?.goal; ctx.textAlign="center";
-      ctx.fillStyle=C.nowSoft; roundRect(ctx,466,row-11,36,26,13); ctx.fill();
-      ctx.font="700 13px 'DM Sans', sans-serif"; ctx.fillStyle=C.now; ctx.fillText(cv!=null?String(cv):"\u2014",484,row+5);
-      ctx.fillStyle=C.muted; ctx.font="14px sans-serif"; ctx.fillText("\u2192",522,row+4);
-      ctx.fillStyle=C.visionSoft; roundRect(ctx,542,row-11,36,26,13); ctx.fill();
-      ctx.font="700 13px 'DM Sans', sans-serif"; ctx.fillStyle=C.vision; ctx.fillText(gv!=null?String(gv):"\u2014",560,row+5);
-      if (cv!=null&&gv!=null&&gv>cv) { ctx.fillStyle=C.now; roundRect(ctx,596,row-11,44,26,13); ctx.fill(); ctx.fillStyle="#fff"; ctx.font="700 12px 'DM Sans', sans-serif"; ctx.fillText(`+${gv-cv}`,618,row+5); }
-    });
+    // Scores — compact grid
+    ctx.textAlign="left";ctx.font="800 28px 'Fraunces', Georgia, serif";ctx.fillStyle=C.text;
+    ctx.fillText("Your Scores",100,ly);ly+=20;
 
-    ctx.textAlign="center"; ctx.fillStyle=C.sub; ctx.font="italic 13px 'Fraunces', Georgia, serif";
-    ctx.fillText("Vishesh Khakhar \u2014 Identity & Creation Coach", w/2, h-34);
-
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-      const fileName = `wheel-of-life-${name.trim().replace(/\s+/g,"-").toLowerCase()}.png`;
-      const file = new File([blob], fileName, { type:"image/png" });
-      if (navigator.canShare && navigator.canShare({files:[file]})) {
-        try { await navigator.share({files:[file], title:"Wheel of Life", text:`${name}\u2019s Wheel of Life`}); return; } catch(e) { if (e.name==="AbortError") return; }
+    cats.forEach((c,i)=>{
+      const row=ly+10+i*56;
+      if(i%2===0){ctx.fillStyle="#E4DFF033";rr(ctx,80,row-16,w-160,48,12);ctx.fill()}
+      ctx.textAlign="left";ctx.font="600 22px 'DM Sans', sans-serif";ctx.fillStyle=C.text;
+      ctx.fillText(c.label,110,row+14);
+      const cv=data[c.id]?.current,gv=data[c.id]?.goal;
+      ctx.textAlign="center";
+      // Now pill
+      ctx.fillStyle=C.nowSoft;rr(ctx,680,row-6,56,40,20);ctx.fill();
+      ctx.font="700 22px 'DM Sans', sans-serif";ctx.fillStyle=C.now;
+      ctx.fillText(cv!=null?String(cv):"\u2014",708,row+18);
+      // Arrow
+      ctx.fillStyle=C.muted;ctx.font="22px sans-serif";ctx.fillText("\u2192",758,row+16);
+      // Vision pill
+      ctx.fillStyle=C.visionSoft;rr(ctx,784,row-6,56,40,20);ctx.fill();
+      ctx.font="700 22px 'DM Sans', sans-serif";ctx.fillStyle=C.vision;
+      ctx.fillText(gv!=null?String(gv):"\u2014",812,row+18);
+      // Gap pill
+      if(cv!=null&&gv!=null&&gv>cv){
+        ctx.fillStyle=C.now;rr(ctx,860,row-6,64,40,20);ctx.fill();
+        ctx.fillStyle="#fff";ctx.font="700 20px 'DM Sans', sans-serif";ctx.fillText(`+${gv-cv}`,892,row+18);
       }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a"); a.href=url; a.download=fileName;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-    }, "image/png");
-  }, [data, active, name]);
+    });
 
-  const wheelSize = typeof window!=="undefined" ? Math.min(400, window.innerWidth-80) : 400;
+    // Footer branding
+    const fy=h-100;
+    // Divider
+    const grad2=ctx.createLinearGradient(w/2-120,0,w/2+120,0);
+    grad2.addColorStop(0,C.now+"66");grad2.addColorStop(1,C.vision+"66");
+    ctx.strokeStyle=grad2;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(w/2-120,fy);ctx.lineTo(w/2+120,fy);ctx.stroke();
 
-  return (
-    <div style={{ minHeight:"100vh", background:"linear-gradient(180deg, #F3F0F8 0%, #EDE7F6 50%, #F0ECF8 100%)", display:"flex", flexDirection:"column", alignItems:"center", padding:"0 20px", fontFamily:"'DM Sans', sans-serif" }}>
+    ctx.textAlign="center";ctx.fillStyle=C.text;
+    ctx.font="italic 26px 'Fraunces', Georgia, serif";
+    ctx.fillText("Vishesh Khakhar",w/2,fy+40);
+    ctx.font="600 18px 'DM Sans', sans-serif";ctx.fillStyle=C.sub;
+    ctx.fillText("Identity & Creation Coach  \u00b7  @build_with_vishesh",w/2,fy+70);
 
-      {step>=1 && step<=8 && (
-        <div style={{ position:"sticky", top:0, width:"100%", maxWidth:480, padding:"18px 0 10px", zIndex:10, background:"linear-gradient(180deg, #F3F0F8 80%, transparent)" }}>
-          <div style={{ display:"flex", gap:5 }}>
-            {CATEGORIES.map((_,i) => (
-              <div key={i} style={{ flex:1, height:4, borderRadius:3, background:i<step?`linear-gradient(90deg, ${C.now}, ${C.vision})`:C.border, transition:"background 0.35s" }} />
-            ))}
+    // Share / download
+    canvas.toBlob(async blob=>{
+      if(!blob)return;
+      const fn=`wheel-of-life-${name.trim().replace(/\s+/g,"-").toLowerCase()}.png`;
+      const file=new File([blob],fn,{type:"image/png"});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file],title:"Wheel of Life",text:`${name}\u2019s Wheel of Life`});return}catch(e){if(e.name==="AbortError")return}
+      }
+      const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=fn;
+      document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),5000);
+    },"image/png");
+  },[data,active,name]);
+
+  const ws=typeof window!=="undefined"?Math.min(400,window.innerWidth-80):400;
+
+  return(
+    <div style={{minHeight:"100vh",background:"linear-gradient(180deg,#F3F0F8 0%,#EDE7F6 50%,#F0ECF8 100%)",display:"flex",flexDirection:"column",alignItems:"center",padding:"0 20px",fontFamily:"'DM Sans',sans-serif"}}>
+
+      {/* Progress */}
+      {step>=1&&step<=8&&(
+        <div style={{position:"sticky",top:0,width:"100%",maxWidth:480,padding:"18px 0 10px",zIndex:10,background:"linear-gradient(180deg,#F3F0F8 80%,transparent)"}}>
+          <div style={{display:"flex",gap:5}}>
+            {CATS.map((_,i)=><div key={i} style={{flex:1,height:4,borderRadius:3,background:i<step?`linear-gradient(90deg,${C.now},${C.vision})`:C.border,transition:"background 0.35s"}}/>)}
           </div>
-          <div style={{ fontSize:11, color:C.muted, textAlign:"right", marginTop:6, fontWeight:600 }}>{step} / 8</div>
+          <div style={{fontSize:11,color:C.muted,textAlign:"right",marginTop:6,fontWeight:600}}>{step} / 8</div>
         </div>
       )}
 
-      {/* INTRO */}
-      {step===0 && (
-        <div style={{ maxWidth:420, width:"100%", textAlign:"center", paddingTop:72, animation:"fadeUp 0.5s ease" }}>
-          <div style={{ display:"inline-block", padding:"6px 18px", borderRadius:30, background:`linear-gradient(135deg, ${C.nowSoft}, ${C.visionSoft})`, border:`1px solid ${C.border}`, fontSize:12, fontWeight:600, color:C.now, letterSpacing:"0.06em", marginBottom:24 }}>GOAL SETTING SESSION</div>
-          <h1 style={{ fontFamily:"'Fraunces', serif", fontSize:44, fontWeight:900, color:C.text, lineHeight:1.12, margin:"0 0 16px", background:`linear-gradient(135deg, ${C.now} 0%, ${C.vision} 100%)`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>Wheel of Life</h1>
-          <p style={{ fontSize:15, color:C.sub, lineHeight:1.7, margin:"0 auto 44px", maxWidth:340 }}>A snapshot of where you are today and where you want to be. No right answers, just honest ones.</p>
-          <div style={{ textAlign:"left", marginBottom:36 }}>
-            <label style={{ display:"block", fontSize:11, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:C.sub, marginBottom:10 }}>Your name</label>
+      {/* ═══ INTRO ═══ */}
+      {step===0&&(
+        <div style={{maxWidth:420,width:"100%",textAlign:"center",paddingTop:72,animation:"fadeUp 0.5s ease"}}>
+          <div style={{display:"inline-block",padding:"6px 18px",borderRadius:30,background:`linear-gradient(135deg,${C.nowSoft},${C.visionSoft})`,border:`1px solid ${C.border}`,fontSize:12,fontWeight:600,color:C.now,letterSpacing:"0.06em",marginBottom:24}}>GOAL SETTING SESSION</div>
+          <h1 style={{fontFamily:"'Fraunces',serif",fontSize:44,fontWeight:900,lineHeight:1.12,margin:"0 0 16px",background:`linear-gradient(135deg,${C.now} 0%,${C.vision} 100%)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Wheel of Life</h1>
+          <p style={{fontSize:15,color:C.sub,lineHeight:1.7,margin:"0 auto 44px",maxWidth:340}}>A snapshot of where you are today and where you want to be. No right answers, just honest ones.</p>
+          <div style={{textAlign:"left",marginBottom:36}}>
+            <label style={{display:"block",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:C.sub,marginBottom:10}}>Your name</label>
             <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="Enter your first name" autoFocus onKeyDown={e=>e.key==="Enter"&&canGo&&next()}
-              style={{ width:"100%", padding:"16px 20px", borderRadius:14, border:`2px solid ${C.border}`, background:C.card, fontFamily:"'DM Sans', sans-serif", fontSize:16, color:C.text, outline:"none", boxSizing:"border-box", transition:"border-color 0.2s" }}
-              onFocus={e=>e.target.style.borderColor=C.now} onBlur={e=>e.target.style.borderColor=C.border} />
+              style={{width:"100%",padding:"16px 20px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,fontFamily:"'DM Sans'",fontSize:16,color:C.text,outline:"none",boxSizing:"border-box",transition:"border-color 0.2s"}}
+              onFocus={e=>e.target.style.borderColor=C.now} onBlur={e=>e.target.style.borderColor=C.border}/>
           </div>
-          <button onClick={next} disabled={!canGo} style={{ width:"100%", padding:"16px", borderRadius:14, border:"none", background:canGo?`linear-gradient(135deg, ${C.now}, ${C.vision})`:C.border, color:canGo?"#fff":C.muted, fontFamily:"'DM Sans', sans-serif", fontSize:15, fontWeight:700, cursor:canGo?"pointer":"default", letterSpacing:"0.03em", transition:"all 0.25s", boxShadow:canGo?`0 4px 20px ${C.nowMid}`:"none" }}>Let's Go →</button>
-          <p style={{ fontSize:12, color:C.muted, marginTop:24, lineHeight:1.6 }}>8 life areas · 1–10 scale · skip up to 2</p>
-          <p style={{ fontSize:13, color:C.sub, marginTop:36, fontFamily:"'Fraunces', serif", fontStyle:"italic", opacity:0.6 }}>Vishesh Khakhar — Identity & Creation Coach</p>
+          <button onClick={next} disabled={!canGo} style={{width:"100%",padding:"16px",borderRadius:14,border:"none",background:canGo?`linear-gradient(135deg,${C.now},${C.vision})`:C.border,color:canGo?"#fff":C.muted,fontFamily:"'DM Sans'",fontSize:15,fontWeight:700,letterSpacing:"0.03em",transition:"all 0.25s",boxShadow:canGo?`0 4px 20px ${C.nowMid}`:"none"}}>Let's Go →</button>
+          <p style={{fontSize:12,color:C.muted,marginTop:24,lineHeight:1.6}}>8 life areas · 1–10 scale · skip up to 2</p>
+          <p style={{fontSize:13,color:C.sub,marginTop:36,fontFamily:"'Fraunces',serif",fontStyle:"italic",opacity:0.6}}>Vishesh Khakhar — Identity & Creation Coach</p>
         </div>
       )}
 
-      {/* CATEGORY */}
-      {cat && (
-        <div key={cat.id} style={{ maxWidth:460, width:"100%", paddingTop:20, paddingBottom:100, animation:"fadeUp 0.3s ease" }}>
-          <div style={{ display:"flex", justifyContent:"center", marginBottom:12, opacity:0.45, transform:"scale(0.36)", transformOrigin:"top center", height:90, pointerEvents:"none" }}>
-            <WheelChart data={data} activeCategories={active} size={260} />
+      {/* ═══ CATEGORY ═══ */}
+      {cat&&(
+        <div key={cat.id} style={{maxWidth:460,width:"100%",paddingTop:20,paddingBottom:100,animation:"fadeUp 0.3s ease"}}>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:12,opacity:0.45,transform:"scale(0.36)",transformOrigin:"top center",height:90,pointerEvents:"none"}}>
+            <Wheel data={data} active={active} size={260}/>
           </div>
-          <div style={{ textAlign:"center", marginBottom:28 }}>
-            <div style={{ display:"inline-block", padding:"4px 14px", borderRadius:20, background:C.border, fontSize:11, fontWeight:700, color:C.sub, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:14 }}>{step} of 8</div>
-            <h2 style={{ fontFamily:"'Fraunces', serif", fontSize:30, fontWeight:900, color:C.text, margin:"0 0 6px" }}>{cat.label}</h2>
-            <p style={{ fontSize:14, color:C.sub, margin:0 }}>{cat.prompt}</p>
+          <div style={{textAlign:"center",marginBottom:28}}>
+            <div style={{display:"inline-block",padding:"4px 14px",borderRadius:20,background:C.border,fontSize:11,fontWeight:700,color:C.sub,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:14}}>{step} of 8</div>
+            <h2 style={{fontFamily:"'Fraunces',serif",fontSize:30,fontWeight:900,color:C.text,margin:"0 0 6px"}}>{cat.label}</h2>
+            <p style={{fontSize:14,color:C.sub,margin:0}}>{cat.prompt}</p>
           </div>
 
-          {data[cat.id].skipped ? (
-            <div style={{ textAlign:"center", padding:"48px 20px", background:C.card, borderRadius:22, border:`1.5px dashed ${C.border}` }}>
-              <div style={{ fontSize:22, marginBottom:8, opacity:0.3 }}>⏭</div>
-              <p style={{ fontSize:14, color:C.muted, margin:0 }}>Skipping this one for now</p>
+          {data[cat.id].skipped?(
+            <div style={{textAlign:"center",padding:"48px 20px",background:C.card,borderRadius:22,border:`1.5px dashed ${C.border}`}}>
+              <div style={{fontSize:22,marginBottom:8,opacity:0.3}}>⏭</div>
+              <p style={{fontSize:14,color:C.muted,margin:0}}>Skipping this one for now</p>
             </div>
-          ) : (
-            <div style={{ background:C.card, borderRadius:22, padding:"28px 24px", border:`1px solid ${C.border}`, boxShadow:"0 4px 28px rgba(124,77,255,0.06)" }}>
-              <RangeSlider value={data[cat.id].current} onChange={v=>upd(cat.id,"current",v)} color={C.now} colorSoft={C.nowSoft} colorMid={C.nowMid} label="Where I am today" />
-              <div style={{ height:2, borderTop:`1px solid ${C.borderLight}`, marginBottom:18 }} />
-              <RangeSlider value={data[cat.id].goal} onChange={v=>upd(cat.id,"goal",v)} color={C.vision} colorSoft={C.visionSoft} colorMid={C.visionMid} label="Where I want to be" />
+          ):(
+            <div style={{background:C.card,borderRadius:22,padding:"28px 24px",border:`1px solid ${C.border}`,boxShadow:"0 4px 28px rgba(124,77,255,0.06)"}}>
+              <Slider value={data[cat.id].current} onChange={v=>upd(cat.id,"current",v)} color={C.now} colorSoft={C.nowSoft} colorMid={C.nowMid} label="Where I am today"/>
+              <div style={{height:2,borderTop:`1px solid ${C.borderLight}`,marginBottom:18}}/>
+              <Slider value={data[cat.id].goal} onChange={v=>upd(cat.id,"goal",v)} color={C.vision} colorSoft={C.visionSoft} colorMid={C.visionMid} label="Where I want to be"/>
             </div>
           )}
 
-          <button onClick={()=>toggleSkip(cat.id)} disabled={!data[cat.id].skipped&&skippedCount>=2}
-            style={{ display:"block", margin:"18px auto 0", background:"none", border:"none", fontFamily:"'DM Sans', sans-serif", fontSize:13, fontWeight:600, color:data[cat.id].skipped?C.now:C.muted, cursor:(!data[cat.id].skipped&&skippedCount>=2)?"default":"pointer", opacity:(!data[cat.id].skipped&&skippedCount>=2)?0.35:1, textDecoration:"underline", textUnderlineOffset:4 }}>
-            {data[cat.id].skipped?"Include this area":skippedCount>=2?"Max 2 areas skipped":"Skip this for now"}
+          <button onClick={()=>toggleSkip(cat.id)} disabled={!data[cat.id].skipped&&skipCt>=2}
+            style={{display:"block",margin:"18px auto 0",background:"none",border:"none",fontFamily:"'DM Sans'",fontSize:13,fontWeight:600,color:data[cat.id].skipped?C.now:C.muted,opacity:(!data[cat.id].skipped&&skipCt>=2)?0.35:1,textDecoration:"underline",textUnderlineOffset:4}}>
+            {data[cat.id].skipped?"Include this area":skipCt>=2?"Max 2 areas skipped":"Skip this for now"}
           </button>
 
-          <div style={{ display:"flex", gap:12, marginTop:28 }}>
-            <button onClick={back} style={{ padding:"14px 22px", borderRadius:14, border:`2px solid ${C.border}`, background:C.card, color:C.sub, fontSize:16, fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans', sans-serif" }}>←</button>
-            <button onClick={next} disabled={!canGo} style={{ flex:1, padding:"14px 20px", borderRadius:14, border:"none", background:canGo?C.text:C.border, color:canGo?"#F3F0F8":C.muted, fontFamily:"'DM Sans', sans-serif", fontSize:15, fontWeight:700, cursor:canGo?"pointer":"default", letterSpacing:"0.03em", transition:"all 0.2s" }}>
+          <div style={{display:"flex",gap:12,marginTop:28}}>
+            <button onClick={back} style={{padding:"14px 22px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,color:C.sub,fontSize:16,fontWeight:700,fontFamily:"'DM Sans'"}}>←</button>
+            <button onClick={next} disabled={!canGo} style={{flex:1,padding:"14px 20px",borderRadius:14,border:"none",background:canGo?C.text:C.border,color:canGo?"#F3F0F8":C.muted,fontFamily:"'DM Sans'",fontSize:15,fontWeight:700,letterSpacing:"0.03em",transition:"all 0.2s"}}>
               {step===8?"See My Wheel ✦":"Continue →"}
             </button>
           </div>
         </div>
       )}
 
-      {/* RESULTS */}
-      {step===total-1 && (
-        <div style={{ maxWidth:560, width:"100%", textAlign:"center", paddingTop:32, paddingBottom:60, animation:"fadeUp 0.5s ease" }}>
-          <div style={{ display:"inline-block", padding:"5px 16px", borderRadius:20, background:`linear-gradient(135deg, ${C.nowSoft}, ${C.visionSoft})`, border:`1px solid ${C.border}`, fontSize:11, fontWeight:700, color:C.vision, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:16 }}>COMPLETE ✦</div>
-          <h2 style={{ fontFamily:"'Fraunces', serif", fontSize:34, fontWeight:900, color:C.text, margin:"0 0 4px" }}>{name}'s Wheel</h2>
-          <div style={{ display:"flex", gap:20, justifyContent:"center", marginBottom:28, marginTop:14 }}>
-            {[[C.now,"Today"],[C.vision,"Vision"]].map(([col,lbl]) => (
-              <div key={lbl} style={{ display:"flex", alignItems:"center", gap:7 }}>
-                <div style={{ width:12, height:12, borderRadius:"50%", background:col, boxShadow:`0 0 8px ${col}44` }} />
-                <span style={{ fontSize:13, color:C.sub, fontWeight:600 }}>{lbl}</span>
+      {/* ═══ RESULTS ═══ */}
+      {step===total-1&&(
+        <div style={{maxWidth:560,width:"100%",textAlign:"center",paddingTop:32,paddingBottom:60,animation:"fadeUp 0.5s ease"}}>
+          <div style={{display:"inline-block",padding:"5px 16px",borderRadius:20,background:`linear-gradient(135deg,${C.nowSoft},${C.visionSoft})`,border:`1px solid ${C.border}`,fontSize:11,fontWeight:700,color:C.vision,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>COMPLETE ✦</div>
+          <h2 style={{fontFamily:"'Fraunces',serif",fontSize:34,fontWeight:900,color:C.text,margin:"0 0 4px"}}>{name}'s Wheel</h2>
+          <div style={{display:"flex",gap:20,justifyContent:"center",marginBottom:28,marginTop:14}}>
+            {[[C.now,"Today"],[C.vision,"Vision"]].map(([col,lbl])=>(
+              <div key={lbl} style={{display:"flex",alignItems:"center",gap:7}}>
+                <div style={{width:12,height:12,borderRadius:"50%",background:col,boxShadow:`0 0 8px ${col}44`}}/>
+                <span style={{fontSize:13,color:C.sub,fontWeight:600}}>{lbl}</span>
               </div>
             ))}
           </div>
-          <div style={{ background:C.card, borderRadius:24, padding:"36px 16px", border:`1px solid ${C.border}`, boxShadow:"0 8px 40px rgba(124,77,255,0.06), 0 2px 12px rgba(0,191,165,0.04)", marginBottom:28, display:"flex", justifyContent:"center" }}>
-            <WheelChart data={data} activeCategories={active} size={wheelSize} />
+          <div style={{background:C.card,borderRadius:24,padding:"36px 16px",border:`1px solid ${C.border}`,boxShadow:"0 8px 40px rgba(124,77,255,0.06), 0 2px 12px rgba(0,191,165,0.04)",marginBottom:28,display:"flex",justifyContent:"center"}}>
+            <Wheel data={data} active={active} size={ws}/>
           </div>
-          <Insights data={data} activeCategories={active} />
-          <div style={{ display:"flex", gap:12, marginTop:32, flexWrap:"wrap", justifyContent:"center" }}>
-            <button onClick={saveImage} style={{ flex:1, minWidth:180, padding:"16px 24px", borderRadius:14, border:"none", background:`linear-gradient(135deg, ${C.now}, ${C.vision})`, color:"#fff", fontFamily:"'DM Sans', sans-serif", fontSize:14, fontWeight:700, cursor:"pointer", letterSpacing:"0.03em", boxShadow:`0 4px 20px ${C.nowMid}` }}>Save Image ↓</button>
-            <button onClick={()=>setStep(0)} style={{ flex:1, minWidth:180, padding:"16px 24px", borderRadius:14, border:`2px solid ${C.border}`, background:C.card, color:C.sub, fontFamily:"'DM Sans', sans-serif", fontSize:14, fontWeight:700, cursor:"pointer" }}>Start Over</button>
+
+          <Insights data={data} active={active}/>
+
+          {/* CTA */}
+          <CTABlock/>
+
+          {/* Actions */}
+          <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center"}}>
+            <button onClick={saveImage} style={{flex:1,minWidth:180,padding:"16px 24px",borderRadius:14,border:"none",background:`linear-gradient(135deg,${C.now},${C.vision})`,color:"#fff",fontFamily:"'DM Sans'",fontSize:14,fontWeight:700,letterSpacing:"0.03em",boxShadow:`0 4px 20px ${C.nowMid}`}}>Save Image ↓</button>
+            <button onClick={()=>setStep(0)} style={{flex:1,minWidth:180,padding:"16px 24px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,color:C.sub,fontFamily:"'DM Sans'",fontSize:14,fontWeight:700}}>Start Over</button>
           </div>
-          <p style={{ fontSize:13, color:C.sub, marginTop:36, fontFamily:"'Fraunces', serif", fontStyle:"italic", opacity:0.6 }}>Vishesh Khakhar — Identity & Creation Coach</p>
+          <p style={{fontSize:13,color:C.sub,marginTop:32,fontFamily:"'Fraunces',serif",fontStyle:"italic",opacity:0.6}}>Vishesh Khakhar — Identity & Creation Coach</p>
         </div>
       )}
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<WheelOfLife />);
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
