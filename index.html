@@ -1,3 +1,6 @@
+Here's the full content — select all and paste it in:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +30,7 @@ button:active{transform:scale(0.97)!important}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.25.6/babel.min.js"></script>
 <script type="text/babel" data-type="module">
-const {useState,useCallback,useMemo,useRef} = React;
+const {useState,useCallback,useMemo,useRef,useEffect} = React;
 
 const CATS=[
   {id:"health",label:"Health",prompt:"Your physical & mental wellbeing"},
@@ -47,10 +50,23 @@ const C={
   vision:"#00BFA5",visionSoft:"rgba(0,191,165,0.10)",visionMid:"rgba(0,191,165,0.25)",
 };
 
-const TALLY="https://tally.so/r/81kgVY";
+const TALLY="https://www.buildwithvishesh.com/work-with-me";
 const INSTA="https://www.instagram.com/build_with_vishesh/";
+const SHEETS_URL="https://script.google.com/a/macros/buildwithvishesh.com/s/AKfycbwRkllydh6b6IK2AReucTfGSyP7IXHgP3KxMYwsH5oQzisTBOywIN3z62wxD407ZNniRQ/exec";
 
 function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+
+function wrapLabel(label,maxLen){
+  if(label.length<=maxLen)return[label];
+  const words=label.split(" ");
+  const lines=[];let cur="";
+  for(const w of words){
+    if(cur&&(cur+" "+w).length>maxLen){lines.push(cur);cur=w;}
+    else{cur=cur?cur+" "+w:w;}
+  }
+  if(cur)lines.push(cur);
+  return lines;
+}
 
 /* ─── Slider ─── */
 function Slider({value,onChange,color,colorSoft,colorMid,label}){
@@ -64,7 +80,7 @@ function Slider({value,onChange,color,colorSoft,colorMid,label}){
     <div style={{marginBottom:22}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:14}}>
         <span style={{fontFamily:"'DM Sans'",fontSize:11,color:C.sub,fontWeight:600,letterSpacing:"0.1em",textTransform:"uppercase"}}>{label}</span>
-        <span style={{fontFamily:"'Fraunces',serif",fontSize:value!=null?32:16,fontWeight:900,color:value!=null?color:C.muted,lineHeight:1,transition:"all 0.25s cubic-bezier(0.4,0,0.2,1)",fontStyle:value!=null?"normal":"italic",filter:value!=null?`drop-shadow(0 2px 8px ${colorMid})`:"none"}}>{value!=null?value:"\u2014"}</span>
+        <span style={{fontFamily:"'Fraunces',serif",fontSize:value!=null?32:16,fontWeight:900,color:value!=null?color:C.muted,lineHeight:1,transition:"all 0.25s cubic-bezier(0.4,0,0.2,1)",fontStyle:value!=null?"normal":"italic",filter:value!=null?`drop-shadow(0 2px 8px ${colorMid})`:"none"}}>{value!=null?value:"—"}</span>
       </div>
       <div ref={ref} onPointerDown={dn} onPointerMove={mv} onPointerUp={up} onPointerCancel={up} style={{position:"relative",height:54,cursor:"pointer",touchAction:"none",userSelect:"none"}}>
         <div style={{position:"absolute",top:22,left:0,right:0,height:8,borderRadius:4,background:C.border}}/>
@@ -87,6 +103,12 @@ function Wheel({data,active,size}){
   const as=(2*Math.PI)/n,sa=-Math.PI/2;
   const pt=(i,v)=>{const a=sa+i*as,r=(v/10)*mx;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]};
   const poly=k=>active.map((c,i)=>pt(i,data[c.id]?.[k]||0).join(",")).join(" ");
+
+  const labelOffset=size<300?34:42;
+  const fontSize=size<300?9:size<360?10:11;
+  const lineH=fontSize+3;
+  const maxLen=size<300?9:size<360?11:13;
+
   return(
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{overflow:"visible"}}>
       <defs>
@@ -101,12 +123,23 @@ function Wheel({data,active,size}){
       <polygon points={poly("current")} fill="url(#nG)" stroke={C.now} strokeWidth={2.5} strokeLinejoin="round" filter="url(#gN)"/>
       {active.map((cat,i)=>{
         const cv=data[cat.id]?.current||0,gv=data[cat.id]?.goal||0;
-        const a=sa+i*as,lr=mx+30,lx=cx+lr*Math.cos(a),ly=cy+lr*Math.sin(a);
+        const a=sa+i*as,lr=mx+labelOffset,lx=cx+lr*Math.cos(a),ly=cy+lr*Math.sin(a);
         const cosA=Math.cos(a),anchor=cosA>0.1?"start":cosA<-0.1?"end":"middle";
         const dots=[];
         if(gv>0){const[gx,gy]=pt(i,gv);dots.push(<circle key="g" cx={gx} cy={gy} r={5.5} fill={C.vision} stroke="#fff" strokeWidth={2.5}/>)}
         if(cv>0){const[px,py]=pt(i,cv);dots.push(<circle key="c" cx={px} cy={py} r={5.5} fill={C.now} stroke="#fff" strokeWidth={2.5}/>)}
-        return(<g key={cat.id}>{dots}<text x={lx} y={ly} textAnchor={anchor} dominantBaseline="central" style={{fontFamily:"'DM Sans',sans-serif",fontSize:size<300?9:11,fontWeight:700,fill:C.text}}>{cat.label}</text></g>)
+        const lines=wrapLabel(cat.label,maxLen);
+        const totalH=(lines.length-1)*lineH;
+        return(
+          <g key={cat.id}>
+            {dots}
+            <text textAnchor={anchor} style={{fontFamily:"'DM Sans',sans-serif",fontSize,fontWeight:700,fill:C.text}}>
+              {lines.map((line,li)=>(
+                <tspan key={li} x={lx} y={ly - totalH/2 + li*lineH} dominantBaseline="central">{line}</tspan>
+              ))}
+            </text>
+          </g>
+        );
       })}
     </svg>
   );
@@ -186,7 +219,7 @@ function CTABlock(){
         letterSpacing:"0.03em",boxShadow:`0 4px 20px ${C.nowMid}`,
         textAlign:"center",marginBottom:14,
       }}>
-        Book a free clarity call →
+        Book a free discovery call →
       </a>
       <a href={INSTA} target="_blank" rel="noopener noreferrer" style={{
         display:"block",width:"100%",padding:"14px 24px",borderRadius:14,
@@ -205,7 +238,9 @@ function CTABlock(){
 function App(){
   const [step,setStep]=useState(0);
   const [name,setName]=useState("");
+  const [email,setEmail]=useState("");
   const [data,setData]=useState(()=>{const d={};CATS.forEach(c=>{d[c.id]={current:null,goal:null,skipped:false}});return d});
+  const submittedRef=useRef(false);
 
   const skipCt=CATS.filter(c=>data[c.id].skipped).length;
   const active=CATS.filter(c=>!data[c.id].skipped);
@@ -219,26 +254,42 @@ function App(){
   const next=()=>setStep(s=>Math.min(s+1,total-1));
   const back=()=>setStep(s=>Math.max(s-1,0));
   const canGo=useMemo(()=>{
-    if(step===0)return name.trim().length>0;
+    if(step===0)return name.trim().length>0&&/\S+@\S+\.\S+/.test(email.trim());
     if(step>=1&&step<=8){const d=data[CATS[step-1].id];return d.skipped||(d.current!=null&&d.goal!=null)}
     return true;
-  },[step,data,name]);
+  },[step,data,name,email]);
 
   const cat=step>=1&&step<=8?CATS[step-1]:null;
 
-  /* ─── 9:16 Story Image ─── */
+  useEffect(()=>{
+    if(step!==total-1||submittedRef.current||!SHEETS_URL)return;
+    submittedRef.current=true;
+    const scored=active.filter(c=>data[c.id]?.current!=null&&data[c.id]?.goal!=null).map(c=>({...c,c:data[c.id].current,g:data[c.id].goal,gap:data[c.id].goal-data[c.id].current}));
+    const topG=[...scored].sort((a,b)=>b.gap-a.gap).filter(x=>x.gap>0).slice(0,3).map(x=>x.label).join(", ");
+    const topS=[...scored].sort((a,b)=>b.c-a.c).filter(x=>x.c>=4).slice(0,3).map(x=>x.label).join(", ");
+    const avgNow=scored.length?(scored.reduce((s,x)=>s+x.c,0)/scored.length).toFixed(1):"";
+    const avgVision=scored.length?(scored.reduce((s,x)=>s+x.g,0)/scored.length).toFixed(1):"";
+    const payload={
+      name,email,timestamp:new Date().toISOString(),
+      avgNow,avgVision,biggestGrowth:topG,strongFoundations:topS,
+      scores:CATS.reduce((acc,c)=>{
+        acc[c.id]={current:data[c.id]?.current,goal:data[c.id]?.goal,skipped:data[c.id]?.skipped};
+        return acc;
+      },{}),
+    };
+    fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)}).catch(()=>{});
+  },[step]);
+
   const saveImage=useCallback(async()=>{
-    const w=1080,h=1920,dpr=1;
+    const w=1080,h=1920;
     const canvas=document.createElement("canvas");
     canvas.width=w;canvas.height=h;
     const ctx=canvas.getContext("2d");
 
-    // BG gradient
     const bg=ctx.createLinearGradient(0,0,w,h);
     bg.addColorStop(0,"#E8E3F3");bg.addColorStop(0.3,"#F3F0F8");bg.addColorStop(0.7,"#EDE7F6");bg.addColorStop(1,"#E4DEF0");
     ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
 
-    // Subtle decorative circles
     ctx.globalAlpha=0.04;
     ctx.fillStyle=C.now;ctx.beginPath();ctx.arc(w*0.85,h*0.08,180,0,2*Math.PI);ctx.fill();
     ctx.fillStyle=C.vision;ctx.beginPath();ctx.arc(w*0.15,h*0.92,150,0,2*Math.PI);ctx.fill();
@@ -246,7 +297,6 @@ function App(){
 
     try{await document.fonts.ready}catch(e){}
 
-    // Header area
     let y=80;
     ctx.textAlign="center";ctx.fillStyle=C.now;
     ctx.font="600 28px 'DM Sans', sans-serif";ctx.fillText("WHEEL OF LIFE",w/2,y);
@@ -255,13 +305,11 @@ function App(){
     ctx.fillText(name,w/2,y);
     y+=32;
 
-    // Divider line
     const grad=ctx.createLinearGradient(w/2-100,0,w/2+100,0);
     grad.addColorStop(0,C.now);grad.addColorStop(1,C.vision);
     ctx.strokeStyle=grad;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(w/2-80,y);ctx.lineTo(w/2+80,y);ctx.stroke();
     y+=50;
 
-    // Wheel — larger, centered
     const ccx=w/2,ccy=y+300,maxR=280;
     const cats=active,n=cats.length,as=(2*Math.PI)/n,sa=-Math.PI/2;
     const pt=(i,v)=>{const a=sa+i*as,r=(v/10)*maxR;return[ccx+r*Math.cos(a),ccy+r*Math.sin(a)]};
@@ -279,13 +327,14 @@ function App(){
       [[data[c.id]?.goal||0,C.vision],[data[c.id]?.current||0,C.now]].forEach(([v,col])=>{
         if(v>0){const[dx,dy]=pt(i,v);ctx.beginPath();ctx.arc(dx,dy,7,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.stroke()}
       });
-      const a=sa+i*as,lr=maxR+36,lx=ccx+lr*Math.cos(a),ly=ccy+lr*Math.sin(a),cosA=Math.cos(a);
+      const a=sa+i*as,lr=maxR+50,lx=ccx+lr*Math.cos(a),ly=ccy+lr*Math.sin(a),cosA=Math.cos(a);
       ctx.textAlign=cosA>0.1?"left":cosA<-0.1?"right":"center";
-      ctx.font="700 22px 'DM Sans', sans-serif";ctx.fillStyle=C.text;ctx.fillText(c.label,lx,ly+6);
+      const clines=wrapLabel(c.label,14);
+      ctx.font="700 22px 'DM Sans', sans-serif";ctx.fillStyle=C.text;
+      clines.forEach((line,li)=>ctx.fillText(line,lx,ly+6+(li-(clines.length-1)/2)*26));
     });
 
-    // Legend
-    let ly=ccy+maxR+80;
+    let ly=ccy+maxR+90;
     ctx.textAlign="left";
     [[C.now,"Today",w/2-140],[C.vision,"Vision",w/2+40]].forEach(([col,lbl,ox])=>{
       ctx.fillStyle=col;ctx.beginPath();ctx.arc(ox,ly,8,0,2*Math.PI);ctx.fill();
@@ -293,7 +342,6 @@ function App(){
     });
     ly+=56;
 
-    // Scores — compact grid
     ctx.textAlign="left";ctx.font="800 28px 'Fraunces', Georgia, serif";ctx.fillStyle=C.text;
     ctx.fillText("Your Scores",100,ly);ly+=20;
 
@@ -304,47 +352,45 @@ function App(){
       ctx.fillText(c.label,110,row+14);
       const cv=data[c.id]?.current,gv=data[c.id]?.goal;
       ctx.textAlign="center";
-      // Now pill
       ctx.fillStyle=C.nowSoft;rr(ctx,680,row-6,56,40,20);ctx.fill();
       ctx.font="700 22px 'DM Sans', sans-serif";ctx.fillStyle=C.now;
-      ctx.fillText(cv!=null?String(cv):"\u2014",708,row+18);
-      // Arrow
-      ctx.fillStyle=C.muted;ctx.font="22px sans-serif";ctx.fillText("\u2192",758,row+16);
-      // Vision pill
+      ctx.fillText(cv!=null?String(cv):"—",708,row+18);
+      ctx.fillStyle=C.muted;ctx.font="22px sans-serif";ctx.fillText("→",758,row+16);
       ctx.fillStyle=C.visionSoft;rr(ctx,784,row-6,56,40,20);ctx.fill();
       ctx.font="700 22px 'DM Sans', sans-serif";ctx.fillStyle=C.vision;
-      ctx.fillText(gv!=null?String(gv):"\u2014",812,row+18);
-      // Gap pill
+      ctx.fillText(gv!=null?String(gv):"—",812,row+18);
       if(cv!=null&&gv!=null&&gv>cv){
         ctx.fillStyle=C.now;rr(ctx,860,row-6,64,40,20);ctx.fill();
         ctx.fillStyle="#fff";ctx.font="700 20px 'DM Sans', sans-serif";ctx.fillText(`+${gv-cv}`,892,row+18);
       }
     });
 
-    // Footer branding
     const fy=h-100;
-    // Divider
     const grad2=ctx.createLinearGradient(w/2-120,0,w/2+120,0);
     grad2.addColorStop(0,C.now+"66");grad2.addColorStop(1,C.vision+"66");
     ctx.strokeStyle=grad2;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(w/2-120,fy);ctx.lineTo(w/2+120,fy);ctx.stroke();
-
     ctx.textAlign="center";ctx.fillStyle=C.text;
-    ctx.font="italic 26px 'Fraunces', Georgia, serif";
-    ctx.fillText("Vishesh Khakhar",w/2,fy+40);
+    ctx.font="italic 26px 'Fraunces', Georgia, serif";ctx.fillText("Vishesh Khakhar",w/2,fy+40);
     ctx.font="600 18px 'DM Sans', sans-serif";ctx.fillStyle=C.sub;
-    ctx.fillText("Identity & Creation Coach  \u00b7  @build_with_vishesh",w/2,fy+70);
+    ctx.fillText("Identity & Creation Coach  ·  @build_with_vishesh",w/2,fy+70);
 
-    // Share / download
-    canvas.toBlob(async blob=>{
-      if(!blob)return;
-      const fn=`wheel-of-life-${name.trim().replace(/\s+/g,"-").toLowerCase()}.png`;
-      const file=new File([blob],fn,{type:"image/png"});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        try{await navigator.share({files:[file],title:"Wheel of Life",text:`${name}\u2019s Wheel of Life`});return}catch(e){if(e.name==="AbortError")return}
-      }
-      const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=fn;
-      document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),5000);
-    },"image/png");
+    const fn=`wheel-of-life-${name.trim().replace(/\s+/g,"-").toLowerCase()}.png`;
+    const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if(isMobile&&navigator.share){
+      try{
+        const blob=await new Promise(res=>canvas.toBlob(res,"image/png"));
+        const file=new File([blob],fn,{type:"image/png"});
+        if(navigator.canShare&&navigator.canShare({files:[file]})){
+          await navigator.share({files:[file],title:"Wheel of Life",text:`${name}'s Wheel of Life`});
+          return;
+        }
+      }catch(e){if(e.name==="AbortError")return;}
+    }
+
+    const dataUrl=canvas.toDataURL("image/png");
+    const a=document.createElement("a");a.href=dataUrl;a.download=fn;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
   },[data,active,name]);
 
   const ws=typeof window!=="undefined"?Math.min(400,window.innerWidth-80):400;
@@ -352,7 +398,6 @@ function App(){
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(180deg,#F3F0F8 0%,#EDE7F6 50%,#F0ECF8 100%)",display:"flex",flexDirection:"column",alignItems:"center",padding:"0 20px",fontFamily:"'DM Sans',sans-serif"}}>
 
-      {/* Progress */}
       {step>=1&&step<=8&&(
         <div style={{position:"sticky",top:0,width:"100%",maxWidth:480,padding:"18px 0 10px",zIndex:10,background:"linear-gradient(180deg,#F3F0F8 80%,transparent)"}}>
           <div style={{display:"flex",gap:5}}>
@@ -362,15 +407,22 @@ function App(){
         </div>
       )}
 
-      {/* ═══ INTRO ═══ */}
       {step===0&&(
         <div style={{maxWidth:420,width:"100%",textAlign:"center",paddingTop:72,animation:"fadeUp 0.5s ease"}}>
           <div style={{display:"inline-block",padding:"6px 18px",borderRadius:30,background:`linear-gradient(135deg,${C.nowSoft},${C.visionSoft})`,border:`1px solid ${C.border}`,fontSize:12,fontWeight:600,color:C.now,letterSpacing:"0.06em",marginBottom:24}}>GOAL SETTING SESSION</div>
           <h1 style={{fontFamily:"'Fraunces',serif",fontSize:44,fontWeight:900,lineHeight:1.12,margin:"0 0 16px",background:`linear-gradient(135deg,${C.now} 0%,${C.vision} 100%)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>Wheel of Life</h1>
           <p style={{fontSize:15,color:C.sub,lineHeight:1.7,margin:"0 auto 44px",maxWidth:340}}>A snapshot of where you are today and where you want to be. No right answers, just honest ones.</p>
-          <div style={{textAlign:"left",marginBottom:36}}>
+          <div style={{textAlign:"left",marginBottom:20}}>
             <label style={{display:"block",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:C.sub,marginBottom:10}}>Your name</label>
-            <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="Enter your first name" autoFocus onKeyDown={e=>e.key==="Enter"&&canGo&&next()}
+            <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="Enter your first name" autoFocus
+              onKeyDown={e=>e.key==="Enter"&&document.getElementById("email-input")&&document.getElementById("email-input").focus()}
+              style={{width:"100%",padding:"16px 20px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,fontFamily:"'DM Sans'",fontSize:16,color:C.text,outline:"none",boxSizing:"border-box",transition:"border-color 0.2s"}}
+              onFocus={e=>e.target.style.borderColor=C.now} onBlur={e=>e.target.style.borderColor=C.border}/>
+          </div>
+          <div style={{textAlign:"left",marginBottom:36}}>
+            <label style={{display:"block",fontSize:11,fontWeight:700,letterSpacing:"0.1em",textTransform:"uppercase",color:C.sub,marginBottom:10}}>Your email</label>
+            <input id="email-input" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Enter your email address"
+              onKeyDown={e=>e.key==="Enter"&&canGo&&next()}
               style={{width:"100%",padding:"16px 20px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,fontFamily:"'DM Sans'",fontSize:16,color:C.text,outline:"none",boxSizing:"border-box",transition:"border-color 0.2s"}}
               onFocus={e=>e.target.style.borderColor=C.now} onBlur={e=>e.target.style.borderColor=C.border}/>
           </div>
@@ -380,7 +432,6 @@ function App(){
         </div>
       )}
 
-      {/* ═══ CATEGORY ═══ */}
       {cat&&(
         <div key={cat.id} style={{maxWidth:460,width:"100%",paddingTop:20,paddingBottom:100,animation:"fadeUp 0.3s ease"}}>
           <div style={{display:"flex",justifyContent:"center",marginBottom:12,opacity:0.45,transform:"scale(0.36)",transformOrigin:"top center",height:90,pointerEvents:"none"}}>
@@ -419,7 +470,6 @@ function App(){
         </div>
       )}
 
-      {/* ═══ RESULTS ═══ */}
       {step===total-1&&(
         <div style={{maxWidth:560,width:"100%",textAlign:"center",paddingTop:32,paddingBottom:60,animation:"fadeUp 0.5s ease"}}>
           <div style={{display:"inline-block",padding:"5px 16px",borderRadius:20,background:`linear-gradient(135deg,${C.nowSoft},${C.visionSoft})`,border:`1px solid ${C.border}`,fontSize:11,fontWeight:700,color:C.vision,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>COMPLETE ✦</div>
@@ -432,19 +482,16 @@ function App(){
               </div>
             ))}
           </div>
-          <div style={{background:C.card,borderRadius:24,padding:"36px 16px",border:`1px solid ${C.border}`,boxShadow:"0 8px 40px rgba(124,77,255,0.06), 0 2px 12px rgba(0,191,165,0.04)",marginBottom:28,display:"flex",justifyContent:"center"}}>
+          <div style={{background:C.card,borderRadius:24,padding:"36px 16px",border:`1px solid ${C.border}`,boxShadow:"0 8px 40px rgba(124,77,255,0.06), 0 2px 12px rgba(0,191,165,0.04)",marginBottom:28,display:"flex",justifyContent:"center",overflow:"hidden"}}>
             <Wheel data={data} active={active} size={ws}/>
           </div>
 
           <Insights data={data} active={active}/>
-
-          {/* CTA */}
           <CTABlock/>
 
-          {/* Actions */}
           <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center"}}>
             <button onClick={saveImage} style={{flex:1,minWidth:180,padding:"16px 24px",borderRadius:14,border:"none",background:`linear-gradient(135deg,${C.now},${C.vision})`,color:"#fff",fontFamily:"'DM Sans'",fontSize:14,fontWeight:700,letterSpacing:"0.03em",boxShadow:`0 4px 20px ${C.nowMid}`}}>Save Image ↓</button>
-            <button onClick={()=>setStep(0)} style={{flex:1,minWidth:180,padding:"16px 24px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,color:C.sub,fontFamily:"'DM Sans'",fontSize:14,fontWeight:700}}>Start Over</button>
+            <button onClick={()=>{setStep(0);submittedRef.current=false;}} style={{flex:1,minWidth:180,padding:"16px 24px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,color:C.sub,fontFamily:"'DM Sans'",fontSize:14,fontWeight:700}}>Start Over</button>
           </div>
           <p style={{fontSize:13,color:C.sub,marginTop:32,fontFamily:"'Fraunces',serif",fontStyle:"italic",opacity:0.6}}>Vishesh Khakhar — Identity & Creation Coach</p>
         </div>
@@ -457,3 +504,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
 </html>
+```
+
+Paste that in, scroll down, click **Commit changes**, and it's live!
