@@ -272,7 +272,7 @@ function App(){
     const avgNow=scored.length?(scored.reduce((s,x)=>s+x.c,0)/scored.length).toFixed(1):"";
     const avgVision=scored.length?(scored.reduce((s,x)=>s+x.g,0)/scored.length).toFixed(1):"";
     const payload={
-      name,email,timestamp:new Date().toISOString(),
+      name,email,timestamp:new Date().toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true}),
       avgNow,avgVision,biggestGrowth:topG,strongFoundations:topS,
       scores:CATS.reduce((acc,c)=>{
         acc[c.id]={current:data[c.id]?.current,goal:data[c.id]?.goal,skipped:data[c.id]?.skipped};
