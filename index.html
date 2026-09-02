@@ -49,12 +49,10 @@ const C={
 
 const TALLY="https://www.buildwithvishesh.com/work-with-me";
 const INSTA="https://www.instagram.com/build_with_vishesh/";
-// Paste your Google Apps Script Web App URL below:
 const SHEETS_URL="https://script.google.com/macros/s/AKfycbxrnuxN77ldaeFdgGbxs6SYtYYCwrHW3JooQS0F-ZQwEpDb6F0d6b0hqHTgJyCka2133A/exec";
 
 function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
 
-// Split a label string into lines that fit within maxLen characters
 function wrapLabel(label,maxLen){
   if(label.length<=maxLen)return[label];
   const words=label.split(" ");
@@ -103,11 +101,9 @@ function Wheel({data,active,size}){
   const pt=(i,v)=>{const a=sa+i*as,r=(v/10)*mx;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]};
   const poly=k=>active.map((c,i)=>pt(i,data[c.id]?.[k]||0).join(",")).join(" ");
 
-  // Label radius: leave extra room so text never overlaps the outer ring
   const labelOffset=size<300?34:42;
   const fontSize=size<300?9:size<360?10:11;
   const lineH=fontSize+3;
-  // Max characters per line scales with size
   const maxLen=size<300?9:size<360?11:13;
 
   return(
@@ -262,7 +258,6 @@ function App(){
 
   const cat=step>=1&&step<=8?CATS[step-1]:null;
 
-  // Send data to Google Sheets when results are first shown
   useEffect(()=>{
     if(step!==total-1||submittedRef.current||!SHEETS_URL)return;
     submittedRef.current=true;
@@ -282,14 +277,12 @@ function App(){
     fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)}).catch(()=>{});
   },[step]);
 
-  /* ─── Cross-platform Save Image ─── */
   const saveImage=useCallback(async()=>{
     const w=1080,h=1920;
     const canvas=document.createElement("canvas");
     canvas.width=w;canvas.height=h;
     const ctx=canvas.getContext("2d");
 
-    // BG gradient
     const bg=ctx.createLinearGradient(0,0,w,h);
     bg.addColorStop(0,"#E8E3F3");bg.addColorStop(0.3,"#F3F0F8");bg.addColorStop(0.7,"#EDE7F6");bg.addColorStop(1,"#E4DEF0");
     ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
@@ -381,19 +374,17 @@ function App(){
     const fn=`wheel-of-life-${name.trim().replace(/\s+/g,"-").toLowerCase()}.png`;
     const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    // Mobile: try Web Share API (saves to Photos on iOS, share sheet on Android)
     if(isMobile&&navigator.share){
       try{
         const blob=await new Promise(res=>canvas.toBlob(res,"image/png"));
         const file=new File([blob],fn,{type:"image/png"});
         if(navigator.canShare&&navigator.canShare({files:[file]})){
-          await navigator.share({files:[file],title:"Wheel of Life",text:`${name}’s Wheel of Life`});
+          await navigator.share({files:[file],title:"Wheel of Life",text:`${name}'s Wheel of Life`});
           return;
         }
       }catch(e){if(e.name==="AbortError")return;}
     }
 
-    // Desktop + Android fallback: dataURL anchor download (synchronous, no popup blocker issues)
     const dataUrl=canvas.toDataURL("image/png");
     const a=document.createElement("a");a.href=dataUrl;a.download=fn;
     document.body.appendChild(a);a.click();document.body.removeChild(a);
@@ -404,7 +395,6 @@ function App(){
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(180deg,#F3F0F8 0%,#EDE7F6 50%,#F0ECF8 100%)",display:"flex",flexDirection:"column",alignItems:"center",padding:"0 20px",fontFamily:"'DM Sans',sans-serif"}}>
 
-      {/* Progress */}
       {step>=1&&step<=8&&(
         <div style={{position:"sticky",top:0,width:"100%",maxWidth:480,padding:"18px 0 10px",zIndex:10,background:"linear-gradient(180deg,#F3F0F8 80%,transparent)"}}>
           <div style={{display:"flex",gap:5}}>
@@ -414,7 +404,6 @@ function App(){
         </div>
       )}
 
-      {/* ═══ INTRO ═══ */}
       {step===0&&(
         <div style={{maxWidth:420,width:"100%",textAlign:"center",paddingTop:72,animation:"fadeUp 0.5s ease"}}>
           <div style={{display:"inline-block",padding:"6px 18px",borderRadius:30,background:`linear-gradient(135deg,${C.nowSoft},${C.visionSoft})`,border:`1px solid ${C.border}`,fontSize:12,fontWeight:600,color:C.now,letterSpacing:"0.06em",marginBottom:24}}>GOAL SETTING SESSION</div>
@@ -440,7 +429,6 @@ function App(){
         </div>
       )}
 
-      {/* ═══ CATEGORY ═══ */}
       {cat&&(
         <div key={cat.id} style={{maxWidth:460,width:"100%",paddingTop:20,paddingBottom:100,animation:"fadeUp 0.3s ease"}}>
           <div style={{display:"flex",justifyContent:"center",marginBottom:12,opacity:0.45,transform:"scale(0.36)",transformOrigin:"top center",height:90,pointerEvents:"none"}}>
@@ -479,7 +467,6 @@ function App(){
         </div>
       )}
 
-      {/* ═══ RESULTS ═══ */}
       {step===total-1&&(
         <div style={{maxWidth:560,width:"100%",textAlign:"center",paddingTop:32,paddingBottom:60,animation:"fadeUp 0.5s ease"}}>
           <div style={{display:"inline-block",padding:"5px 16px",borderRadius:20,background:`linear-gradient(135deg,${C.nowSoft},${C.visionSoft})`,border:`1px solid ${C.border}`,fontSize:11,fontWeight:700,color:C.vision,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>COMPLETE ✦</div>
@@ -497,11 +484,8 @@ function App(){
           </div>
 
           <Insights data={data} active={active}/>
-
-          {/* CTA */}
           <CTABlock/>
 
-          {/* Actions */}
           <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center"}}>
             <button onClick={saveImage} style={{flex:1,minWidth:180,padding:"16px 24px",borderRadius:14,border:"none",background:`linear-gradient(135deg,${C.now},${C.vision})`,color:"#fff",fontFamily:"'DM Sans'",fontSize:14,fontWeight:700,letterSpacing:"0.03em",boxShadow:`0 4px 20px ${C.nowMid}`}}>Save Image ↓</button>
             <button onClick={()=>{setStep(0);submittedRef.current=false;}} style={{flex:1,minWidth:180,padding:"16px 24px",borderRadius:14,border:`2px solid ${C.border}`,background:C.card,color:C.sub,fontFamily:"'DM Sans'",fontSize:14,fontWeight:700}}>Start Over</button>
